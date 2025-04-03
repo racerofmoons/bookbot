@@ -1,11 +1,19 @@
 import requests
 import os
 
+def cull_text(text, start_sequence="*** START OF THE PROJECT GUTENBERG EBOOK", end_sequence="*** END OF THE PROJECT GUTENBERG EBOOK"):
+    start_index = text.find(start_sequence)
+    end_index = text.find(end_sequence)
+    if start_index != -1 and end_index != -1:
+        return text[start_index + len(start_sequence):end_index]
+    else:
+        return text
+
 def get_book_text(filepath):
     if filepath.startswith('http'):
         response = requests.get(filepath)
         if response.status_code == 200:
-            return response.text
+            return cull_text(response.text)
         else:
             raise Exception(f"Failed to fetch the book from URL: {filepath}")
     elif os.path.isfile(filepath):
